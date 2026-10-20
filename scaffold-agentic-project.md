@@ -1,6 +1,6 @@
 ---
 name: scaffold-agentic-project
-description: Scaffold a new project with the agent-ready baseline - AGENTS.md/CLAUDE.md with brutally-honest system prompt, ADR process with machine-readable Relations, spec-driven development rules, GitHub PR templates (implementation + spec change), 1Password secrets template, .gitignore, and Claude Code permission deny for gh pr merge. Use when the user asks to bootstrap, scaffold, initialize, or set up a new project/repo with "the usual template", "my project template", ADR + specs + PR templates, or runs /scaffold-agentic-project.
+description: Scaffold a new project with the agent-ready baseline - AGENTS.md/CLAUDE.md with brutally-honest system prompt, ADR process with machine-readable Relations, spec-driven development rules, GitHub PR templates (implementation + spec change), .gitignore, and Claude Code permission deny for gh pr merge. Use when the user asks to bootstrap, scaffold, initialize, or set up a new project/repo with "the usual template", "my project template", ADR + specs + PR templates, or runs /scaffold-agentic-project.
 ---
 
 # Scaffold agentic project
@@ -30,7 +30,6 @@ user gives).
    - docs/adr: ADR template, ADR-0001 (use ADRs), ADR-0002 (spec-driven dev)
    - specs/_template.md: feature spec template with stable requirement IDs
    - .github: implementation and spec-change PR templates
-   - config/secrets.env.tpl: 1Password op:// reference placeholder
    - .claude/settings.json: deny gh pr merge for agents
    - .gitignore
    ~~~
@@ -40,8 +39,6 @@ user gives).
      Without it, agents can push to `main` directly and the PR rules mean nothing.
    - Write ADR-0003: project purpose and tech stack. Every later ADR needs it
      as a base.
-   - Replace `SECRET_PLACEHOLDER` in `config/secrets.env.tpl` with real `op://`
-     references.
 
 ## Manifest
 
@@ -179,20 +176,11 @@ No separate decision-tree artifacts. Alternatives and the reasoning for rejectin
 them go into the ADR's `Considered options` section. If a decision genuinely has
 multi-level branching (choice A forces sub-choices B/C), add a Mermaid `flowchart`
 inline in that ADR — not as a standalone file.
-
-## Secrets
-
-- Secrets live in 1Password only. Never commit real secret values.
-- `config/*.tpl` files contain only `op://` references; resolve them at runtime
-  with `op run --env-file=config/secrets.env.tpl -- <command>` or
-  `op inject -i config/secrets.env.tpl -o config/secrets.env`.
-- Resolved files (`config/*.env`) are git-ignored.
 ~~~
 
 ### `.gitignore`
 ~~~gitignore
-# Resolved secrets (from config/*.tpl via `op inject`)
-config/*.env
+# Local environment files
 .env
 .env.*
 
@@ -213,16 +201,6 @@ config/*.env
     ]
   }
 }
-~~~
-
-### `config/secrets.env.tpl`
-~~~
-# 1Password secret references. Contains NO real values — safe to commit.
-# Resolve at runtime:
-#   op run --env-file=config/secrets.env.tpl -- <command>
-#   op inject -i config/secrets.env.tpl -o config/secrets.env
-
-SECRET_PLACEHOLDER="op://<vault>/<item>/<field>"
 ~~~
 
 ### `docs/adr/0000-template.md`
@@ -455,7 +433,6 @@ Delete comment blocks before submitting. Sections marked (optional) may be remov
 ## Security and secrets
 
 - [ ] No secrets, tokens, or credentials in code, config, logs, or tests
-- [ ] New secrets added only as `op://` references in `config/*.tpl`
 - [ ] No new external data exposure (or described above)
 
 ## Checklist
